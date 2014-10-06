@@ -122,6 +122,10 @@ class HuffmanSuite extends FunSuite {
     assert(decodedSecret === string2Chars("huffmanestcool"));
   }
   
+  test("generate secret code") {
+    assert(encode(frenchCode)(string2Chars("huffmanestcool")) === secret)
+  }
+  
   test("decode and encode a very short text should be identity") {
     new TestTrees {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
