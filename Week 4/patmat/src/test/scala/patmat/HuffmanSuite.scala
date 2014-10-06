@@ -15,11 +15,11 @@ class HuffmanSuite extends FunSuite {
     
     val efTree = Fork(Leaf('e', 1), Leaf('f', 1), List('e', 'f'), 2);
     val ghTree = Fork(Leaf('g', 1), Leaf('h', 1), List('g', 'h'), 2);
-    val efghTree = Fork(efTree, ghTree, List('e', 'f', 'g', 'h'), 4);
     val cdTree = Fork(Leaf('c', 1), Leaf('d', 1), List('c', 'd'), 2);
-    val bcdTree = Fork(Leaf('b', 3), cdTree, List('b', 'c', 'd'), 5);
-    val bcdefghTree = Fork(bcdTree, efghTree, List('b', 'c', 'd', 'e', 'f', 'g', 'h'), 9);
-    val fullTree = Fork(Leaf('a', 8), bcdefghTree, List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'), 17);
+    val cdefTree = Fork(cdTree, efTree, List('c', 'd', 'e', 'f'), 4);
+    val bghTree = Fork(ghTree, Leaf('b', 3), List('g', 'h', 'b'), 5);
+    val bcdefghTree = Fork(cdefTree, bghTree, List('c', 'd', 'e', 'f', 'g', 'h', 'b'), 9);
+    val fullTree = Fork(Leaf('a', 8), bcdefghTree, List('a', 'c', 'd', 'e', 'f', 'g', 'h', 'b'), 17);
   }
 
   test("weight of a larger tree") {
@@ -48,7 +48,7 @@ class HuffmanSuite extends FunSuite {
   
   test("chars of the example tree") {
     new TestTrees {
-      assert(chars(fullTree) === List('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'))
+      assert(chars(fullTree) === List('a', 'c', 'd', 'e', 'f', 'g', 'h', 'b'))
     }
   }
 
@@ -105,7 +105,7 @@ class HuffmanSuite extends FunSuite {
     assert(createCodeTree(leafList) === expectedTree);
   }
 
-    test("createCodeTree results in the example tree") {
+  test("createCodeTree results in the example tree") {
       new TestTrees {
         val leafList = string2Chars("aaaaaaaabbbcdefgh");
         assert(createCodeTree(leafList) === fullTree);
@@ -114,7 +114,7 @@ class HuffmanSuite extends FunSuite {
   
   test("decode D from tree") {
     new TestTrees {
-      assert(decode(fullTree, List(1,0,1,1)) === List('d')) 
+      assert(decode(fullTree, List(1,0,0,1)) === List('d')) 
     }
   }
   

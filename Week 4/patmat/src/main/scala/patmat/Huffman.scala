@@ -53,7 +53,8 @@ object Huffman {
    * you to easily create a character list from a given string.
    */
   def string2Chars(str: String): List[Char] = str.toList
-  def sortByWeight(e1: CodeTree, e2: CodeTree) = (weight(e1) < weight(e2)) || ((weight(e1) == weight(e2)) && (chars(e1).mkString < chars(e2).mkString))
+  def sortByWeight(e1: CodeTree, e2: CodeTree) = (weight(e1) < weight(e2)) || ((weight(e1) == weight(e2)) && (chars(e1).mkString >= chars(e2).mkString))
+  def reverseSortByWeight(e1: CodeTree, e2: CodeTree) = (weight(e1) < weight(e2)) || ((weight(e1) == weight(e2)) && (chars(e1).mkString < chars(e2).mkString))
 
   /**
    * This function computes for each unique character in the list `chars` the number of
@@ -109,7 +110,7 @@ object Huffman {
       else doLeafList(freqs.tail, acc :+ new Leaf(freqs.head._1, freqs.head._2))
       
     val leafList = doLeafList(freqs, List())
-    leafList.sortWith(sortByWeight)
+    leafList.sortWith(reverseSortByWeight)
   }
   /**
    * Checks whether the list `trees` contains only one single code tree.
@@ -131,9 +132,10 @@ object Huffman {
   def combine(trees: List[CodeTree]): List[CodeTree] = {
       val leftTree = trees.head;
       val rightTree = trees.tail.head;
-      val newFork = Fork(leftTree, rightTree, chars(leftTree) ::: chars(rightTree), weight(leftTree) + weight(rightTree));
-      val newTree =  trees.tail.tail ++ List(newFork);
-      newTree.sortWith(sortByWeight)
+      
+      val newFork = makeCodeTree(leftTree, rightTree)
+      val newTree =  List(newFork) ++ trees.tail.tail;
+      newTree.sortWith(reverseSortByWeight)
   }
 
   /**
