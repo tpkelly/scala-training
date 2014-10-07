@@ -131,4 +131,8 @@ class HuffmanSuite extends FunSuite {
       assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
     }
   }
+  
+  test("quickEncode generates secret code") {
+        assert(quickEncode(frenchCode)(string2Chars("huffmanestcool")) === secret)
+  }
 }
