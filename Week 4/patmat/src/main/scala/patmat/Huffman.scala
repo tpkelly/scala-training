@@ -130,7 +130,7 @@ object Huffman {
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
-    if (singleton(trees)) trees
+    if (singleton(trees) || trees.isEmpty) trees
     else {
       val leftTree = trees.head;
       val rightTree = trees.tail.head;

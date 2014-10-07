@@ -103,6 +103,11 @@ class HuffmanSuite extends FunSuite {
     val singleton = List(Leaf('e', 1))
     assert(combine(singleton) === singleton)
   }
+   
+  test("combine of an empty list") {
+    val empty = List()
+    assert(combine(empty) === empty)
+  }
   
   test("createCodeTree results in a single tree") {
     val leafList = string2Chars("ettxxxx");
