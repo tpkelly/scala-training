@@ -99,6 +99,11 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
   
+  test("combine of a singleton") {
+    val singleton = List(Leaf('e', 1))
+    assert(combine(singleton) === singleton)
+  }
+  
   test("createCodeTree results in a single tree") {
     val leafList = string2Chars("ettxxxx");
     val expectedTree = Fork(Fork(Leaf('e', 1), Leaf('t', 2), List('e', 't'), 3), Leaf('x', 4), List('e', 't', 'x'), 7)

@@ -130,12 +130,15 @@ object Huffman {
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
+    if (singleton(trees)) trees
+    else {
       val leftTree = trees.head;
       val rightTree = trees.tail.head;
       
       val newFork = makeCodeTree(leftTree, rightTree)
       val newTree =  List(newFork) ++ trees.tail.tail;
       newTree.sortWith(reverseSortByWeight)
+    }
   }
 
   /**
