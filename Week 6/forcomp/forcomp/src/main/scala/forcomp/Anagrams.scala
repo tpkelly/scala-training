@@ -97,7 +97,21 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    def doCombinations(occurrences: Occurrences, acc: List[Occurrences]): List[Occurrences] = {
+      if (occurrences.isEmpty) acc :+ List()
+      else {
+        occurrences.map(occurrence => {
+          val toSubtract = List((occurrence._1 , 1))
+          val subtracted = subtract(occurrences, toSubtract)
+          doCombinations(subtracted, acc :+ subtracted :+ toSubtract)
+          }
+        ).flatten :+ occurrences
+      }
+    } 
+    
+    doCombinations(occurrences, List());
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
@@ -109,7 +123,19 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    if (y.isEmpty) x
+    else {
+      val matchingItem = x.find(item => item._1 == y.head._1).get
+      val matchingIndex = x.indexOf(matchingItem)
+      
+      if (matchingItem._2 == y.head._2)
+        subtract(x.take(matchingIndex) ::: x.drop(matchingIndex+1), y.tail)
+      else subtract(x.take(matchingIndex) :::
+          List((matchingItem._1, matchingItem._2 - y.head._2)) ::: x.drop(matchingIndex+1),
+          y.tail)
+    }
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *  
