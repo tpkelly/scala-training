@@ -198,27 +198,39 @@ object Anagrams {
       }).distinct
     }
     
-    def combineSubword(subwords : List[Word], targetCombo: Occurrences, acc: List[Word]) : List[Word] = {
-      if (targetCombo.isEmpty) acc
-      else if (subwords.isEmpty) List()
+    def occToString(occ: Occurrences) : String = {
+      if (occ.isEmpty) ""
+      else occToString(subtract(occ, List((occ.head._1, 1)))) + occ.head._1
+    }
+    
+    def doThing(subwords : List[Word], acc : List[Sentence]) : List[Sentence] = {
+      if (subwords.isEmpty) acc
       else {
-        val wordOcc = wordOccurrences(subwords.head)
-        try
-        {
-          val remainderOccurrences = subtract(targetCombo, wordOcc)
-          val newAcc = combineSubword(subwords, remainderOccurrences, acc :+ subwords.head)
-          if (newAcc.isEmpty) combineSubword(subwords.tail, targetCombo, acc) else newAcc
-        }
-        catch { case e: Exception => combineSubword(subwords.tail, targetCombo, acc) }
+        val remainingOccurrences = subtract(sentenceOccurrences(sentence), wordOccurrences(subwords.head))
+        if (remainingOccurrences.isEmpty) List(subwords.head)
+        val remainingSentence = occToString(remainingOccurrences)
+        sentenceAnagrams(List(remainingSentence))
+        //doThing(subwords.tail, acc)
       }
     }
     
-    def combineSentence(subwords : List[Word], targetCombo : Occurrences, acc : List[Sentence]) : List[Sentence] = {
-      if (subwords.isEmpty) acc
-      else combineSentence(subwords.tail, targetCombo, acc :+ combineSubword(subwords, targetCombo, List())) 
-    }
-    
     val subwords = getSubwords(sentence);
-    combineSentence(subwords, sentenceOccurrences(sentence), List(List()))
+    doThing(subwords, List(List()))
+    /*
+    subwords.map(word => {
+      val remainingOccurrences = subtract(sentenceOccurrences(sentence), wordOccurrences(word))
+      if (remainingOccurrences.isEmpty) List(word)
+      
+      val remainingSentence = occToString(remainingOccurrences)
+      val recursive = wordAnagrams(remainingSentence)
+      if (!recursive.isEmpty) recursive :+ word
+      else {
+        sentenceAnagrams(List(remainingSentence)).foreach(item => {
+          if (!item.isEmpty) println(remainingSentence + ": " + (item :+ word));
+        })
+        List();
+      }
+    } : List[Word])
+    */
   }
 }
