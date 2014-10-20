@@ -203,34 +203,19 @@ object Anagrams {
       else occToString(subtract(occ, List((occ.head._1, 1)))) + occ.head._1
     }
     
-    def doThing(subwords : List[Word], acc : List[Sentence]) : List[Sentence] = {
-      if (subwords.isEmpty) acc
-      else {
-        val remainingOccurrences = subtract(sentenceOccurrences(sentence), wordOccurrences(subwords.head))
-        if (remainingOccurrences.isEmpty) List(subwords.head)
-        val remainingSentence = occToString(remainingOccurrences)
-        sentenceAnagrams(List(remainingSentence))
-        //doThing(subwords.tail, acc)
-      }
+    def doThing(subwords : List[Word], targetOccurrences: Occurrences, acc : List[Sentence]) : List[Sentence] = {
+      if (targetOccurrences.isEmpty) acc
+      else subwords.map(word => {
+        val wordOcc = wordOccurrences(word)
+        try
+        {
+          val remainingOccurrences = subtract(targetOccurrences, wordOcc)
+          doThing(subwords, remainingOccurrences, acc.map(item => item :+ word))
+        }
+        catch { case e : Exception => List() }
+      }).flatten
     }
     
-    val subwords = getSubwords(sentence);
-    doThing(subwords, List(List()))
-    /*
-    subwords.map(word => {
-      val remainingOccurrences = subtract(sentenceOccurrences(sentence), wordOccurrences(word))
-      if (remainingOccurrences.isEmpty) List(word)
-      
-      val remainingSentence = occToString(remainingOccurrences)
-      val recursive = wordAnagrams(remainingSentence)
-      if (!recursive.isEmpty) recursive :+ word
-      else {
-        sentenceAnagrams(List(remainingSentence)).foreach(item => {
-          if (!item.isEmpty) println(remainingSentence + ": " + (item :+ word));
-        })
-        List();
-      }
-    } : List[Word])
-    */
+    doThing(getSubwords(sentence), sentenceOccurrences(sentence), List(List()))
   }
 }
