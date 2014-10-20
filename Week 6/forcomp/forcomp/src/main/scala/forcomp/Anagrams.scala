@@ -99,18 +99,16 @@ object Anagrams {
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
     def doCombinations(occurrences: Occurrences, acc: List[Occurrences]): List[Occurrences] = {
-      if (occurrences.isEmpty) acc :+ List()
+      if (occurrences.isEmpty) acc
       else {
-        occurrences.map(occurrence => {
-          val toSubtract = List((occurrence._1 , 1))
-          val subtracted = subtract(occurrences, toSubtract)
-          doCombinations(subtracted, acc :+ subtracted :+ toSubtract)
-          }
-        ).flatten :+ occurrences
+        val extractedItem = List((occurrences.head._1, 1))
+        val remainingList = subtract(occurrences, extractedItem)
+        val newAccItems = acc.map(item => add(item, occurrences.head._1))
+        doCombinations(remainingList, acc ::: newAccItems)
       }
     } 
     
-    doCombinations(occurrences, List());
+    doCombinations(occurrences, List(List()))
   }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
@@ -137,6 +135,15 @@ object Anagrams {
     }
   }
 
+  def add(x: Occurrences, y: Char) : Occurrences = {
+    val matching = x.find(item => item._1 == y)
+    if (matching.isEmpty) x :+ (y, 1)
+    else {
+      val matchingIndex = x.indexOf(matching.get)
+      x.take(matchingIndex) ::: List((y, matching.get._2 + 1)) ::: x.drop(matchingIndex + 1)
+    }
+  }
+  
   /** Returns a list of all anagram sentences of the given sentence.
    *  
    *  An anagram of a sentence is formed by taking the occurrences of all the characters of
