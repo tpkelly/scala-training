@@ -127,7 +127,9 @@ object Anagrams {
       val matchingItem = x.find(item => item._1 == y.head._1).get
       val matchingIndex = x.indexOf(matchingItem)
       
-      if (matchingItem._2 == y.head._2)
+      if (matchingItem._2 < y.head._2)
+        throw new NoSuchElementException() 
+      else if (matchingItem._2 == y.head._2)
         subtract(x.take(matchingIndex) ::: x.drop(matchingIndex+1), y.tail)
       else subtract(x.take(matchingIndex) :::
           List((matchingItem._1, matchingItem._2 - y.head._2)) ::: x.drop(matchingIndex+1),
@@ -196,24 +198,27 @@ object Anagrams {
       }).distinct
     }
     
-    def combineSubwords(subwords : List[Word], targetCombo : Occurrences, acc : List[Word]) : List[Sentence] = {
-      subwords.map(word => {
-        val wordOcc = wordOccurrences(word)
+    def combineSubword(subwords : List[Word], targetCombo: Occurrences, acc: List[Word]) : List[Word] = {
+      if (targetCombo.isEmpty) acc
+      else if (subwords.isEmpty) List()
+      else {
+        val wordOcc = wordOccurrences(subwords.head)
         try
         {
           val remainderOccurrences = subtract(targetCombo, wordOcc)
-          if (remainderOccurrences.isEmpty) {println(acc :+ word); acc :+ word;}
-          else combineSubwords(subwords, remainderOccurrences, acc :+ word)
+          val newAcc = combineSubword(subwords, remainderOccurrences, acc :+ subwords.head)
+          if (newAcc.isEmpty) combineSubword(subwords.tail, targetCombo, acc) else newAcc
         }
-        catch
-        {
-          case e: Exception => Nil
-        }
-      })
-      List(List())
+        catch { case e: Exception => combineSubword(subwords.tail, targetCombo, acc) }
+      }
+    }
+    
+    def combineSentence(subwords : List[Word], targetCombo : Occurrences, acc : List[Sentence]) : List[Sentence] = {
+      if (subwords.isEmpty) acc
+      else combineSentence(subwords.tail, targetCombo, acc :+ combineSubword(subwords, targetCombo, List())) 
     }
     
     val subwords = getSubwords(sentence);
-    combineSubwords(subwords, sentenceOccurrences(sentence), List())
+    combineSentence(subwords, sentenceOccurrences(sentence), List(List()))
   }
 }
