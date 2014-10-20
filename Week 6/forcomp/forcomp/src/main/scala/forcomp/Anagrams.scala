@@ -197,25 +197,20 @@ object Anagrams {
         else option.get;
       }).distinct
     }
-    
-    def occToString(occ: Occurrences) : String = {
-      if (occ.isEmpty) ""
-      else occToString(subtract(occ, List((occ.head._1, 1)))) + occ.head._1
-    }
-    
-    def doThing(subwords : List[Word], targetOccurrences: Occurrences, acc : List[Sentence]) : List[Sentence] = {
+        
+    def doAnagram(subwords : List[Word], targetOccurrences: Occurrences, acc : List[Sentence]) : List[Sentence] = {
       if (targetOccurrences.isEmpty) acc
       else subwords.map(word => {
         val wordOcc = wordOccurrences(word)
         try
         {
           val remainingOccurrences = subtract(targetOccurrences, wordOcc)
-          doThing(subwords, remainingOccurrences, acc.map(item => item :+ word))
+          doAnagram(subwords, remainingOccurrences, acc.map(item => item :+ word))
         }
         catch { case e : Exception => List() }
       }).flatten
     }
     
-    doThing(getSubwords(sentence), sentenceOccurrences(sentence), List(List()))
+    doAnagram(getSubwords(sentence), sentenceOccurrences(sentence), List(List()))
   }
 }
