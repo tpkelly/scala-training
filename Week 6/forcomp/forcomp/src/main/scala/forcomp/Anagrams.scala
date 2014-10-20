@@ -184,6 +184,36 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
-
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    
+    def getSubwords(sentence: Sentence) : List[Word] = {
+      val occurrences = sentenceOccurrences(sentence)
+      val combos = combinations(occurrences)
+      combos.flatMap(combo => { 
+      val option = dictionaryByOccurrences.get(combo);
+        if (option.isEmpty) Nil
+        else option.get;
+      }).distinct
+    }
+    
+    def combineSubwords(subwords : List[Word], targetCombo : Occurrences, acc : List[Word]) : List[Sentence] = {
+      subwords.map(word => {
+        val wordOcc = wordOccurrences(word)
+        try
+        {
+          val remainderOccurrences = subtract(targetCombo, wordOcc)
+          if (remainderOccurrences.isEmpty) {println(acc :+ word); acc :+ word;}
+          else combineSubwords(subwords, remainderOccurrences, acc :+ word)
+        }
+        catch
+        {
+          case e: Exception => Nil
+        }
+      })
+      List(List())
+    }
+    
+    val subwords = getSubwords(sentence);
+    combineSubwords(subwords, sentenceOccurrences(sentence), List())
+  }
 }
