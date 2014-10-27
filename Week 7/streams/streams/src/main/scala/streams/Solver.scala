@@ -67,7 +67,7 @@ trait Solver extends GameDef {
     if (initial.isEmpty) Stream()
     else {
       val newNeighbours = newNeighborsOnly(neighborsWithHistory(initial.head._1, initial.head._2), explored + initial.head._1)
-      from(initial.tail #::: newNeighbours, explored + initial.head._1) #::: initial
+      initial #::: from(initial.tail #::: newNeighbours, explored + initial.head._1)
     }
       
     
