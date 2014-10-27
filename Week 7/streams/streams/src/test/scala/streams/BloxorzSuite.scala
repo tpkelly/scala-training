@@ -39,20 +39,89 @@ class BloxorzSuite extends FunSuite {
 
     val optsolution = List(Right, Right, Down, Right, Right, Right, Down)
   }
-
-  test("terrain function level 1") {
+  
+  test("terrain function: 'o'") {
     new Level1 {
       assert(terrain(Pos(0,0)), "0,0")
+    }
+  }
+  
+  test("terrain function: 'S'") {
+    new Level1 {
+      assert(terrain(Pos(1,1)), "1,1")
+    }
+  }
+  
+  test("terrain function: 'T'") {
+    new Level1 {
+      assert(terrain(Pos(4,7)), "4,7")
+    }
+  }
+  
+  test("terrain function: '-'") {
+    new Level1 {
+      assert(!terrain(Pos(4,1)), "4,1")
+    }
+  }
+  
+  test("terrain function: out of bounds (x)") {
+    new Level1 {
+      assert(!terrain(Pos(11,1)), "11,1")
+    }
+  }
+  
+  test("terrain function: out of bounds (y)") {
+    new Level1 {
       assert(!terrain(Pos(4,11)), "4,11")
     }
   }
 
-  test("findChar level 1") {
+  test("findChar level 1 start") {
     new Level1 {
       assert(startPos == Pos(1,1))
     }
   }
 
+  test("findChar level 1 goal") {
+    new Level1 {
+      assert(goal == Pos(4,7))
+    }
+  }
+  
+  test("isStanding initially") {
+    new Level1 {
+      assert(Block(startPos, startPos).isStanding)
+    }
+  }
+  
+    test("!isStanding after move") {
+    new Level1 {
+      assert(!Block(startPos, startPos).right.isStanding)
+    }
+  }
+  
+  test("isLegal initially") {
+    new Level1 {
+      assert(Block(startPos, startPos).isLegal)
+    }
+  }
+  
+  test("!isLegal after falling off edge") {
+    new Level1 {
+      assert(!Block(startPos, startPos).left.isLegal)
+    }
+  }
+  
+  test("startBlock is at starting position") {
+    new Level1 {
+      assert(startBlock.b1 == startPos)
+      assert(startBlock.b2 == startPos)
+      assert(startBlock.isStanding)
+      assert(startBlock.isLegal)
+    }
+  }
+  
+  /*
   test("optimal solution for level 1") {
     new Level1 {
       assert(solve(solution) == Block(goal, goal))
@@ -64,4 +133,5 @@ class BloxorzSuite extends FunSuite {
       assert(solution.length == optsolution.length)
     }
   }
+  */
 }
