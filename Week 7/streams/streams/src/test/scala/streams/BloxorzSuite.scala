@@ -78,13 +78,13 @@ class BloxorzSuite extends FunSuite {
 
   test("findChar level 1 start") {
     new Level1 {
-      assert(startPos == Pos(1,1))
+      assert(startPos === Pos(1,1))
     }
   }
 
   test("findChar level 1 goal") {
     new Level1 {
-      assert(goal == Pos(4,7))
+      assert(goal === Pos(4,7))
     }
   }
   
@@ -129,7 +129,7 @@ class BloxorzSuite extends FunSuite {
           (Block(Pos(-1, 1), Pos(0, 1)), Up),
           (Block(Pos(2, 1), Pos(3, 1)), Down)
       );
-      assert(startBlock.neighbors == startNeighbours)
+      assert(startBlock.neighbors === startNeighbours)
     }
   }
   
@@ -139,7 +139,56 @@ class BloxorzSuite extends FunSuite {
           (Block(Pos(1, 2), Pos(1, 3)), Right),
           (Block(Pos(2, 1), Pos(3, 1)), Down)
       );
-      assert(startBlock.legalNeighbors == startLegalNeighbours)
+      assert(startBlock.legalNeighbors === startLegalNeighbours)
+    }
+  }
+  
+  test("not done at the start") {
+    new Level1 {
+      assert(!done(startBlock))
+    }
+  }
+  
+  test("done at the end") {
+    new Level1 {
+      assert(done(Block(goal, goal)))
+    }
+  }
+  
+  test("not done if horizontally flat at the end") {
+    new Level1 {
+      assert(!done(Block(goal, Pos(5,7))))
+    }
+  }
+    
+  test("not done if vertically flat at the end") {
+    new Level1 {
+      assert(!done(Block(Pos(4,6), goal)))
+    }
+  }
+  
+  test("neighboursWithHistory generates stream of moves") {
+    new Level1 {
+      val expectedSet = Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      )
+      
+      assert(neighborsWithHistory(startBlock, List(Left, Up)).toSet === expectedSet)
+    }
+  }
+  
+  test("newNeighborsOnly generates list without loops") {
+    new Level1 {
+      val currentNeighbours = Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      ).toStream
+      
+      val explored = Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1)));
+      
+      val expectedSet =  Set((Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))).toStream;
+      assert(newNeighborsOnly(currentNeighbours, explored) === expectedSet)
     }
   }
   

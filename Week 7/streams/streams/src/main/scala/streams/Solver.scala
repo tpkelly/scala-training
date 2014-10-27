@@ -10,7 +10,7 @@ trait Solver extends GameDef {
   /**
    * Returns `true` if the block `b` is at the final position
    */
-  def done(b: Block): Boolean = ???
+  def done(b: Block): Boolean = (b.b1 == goal) && (b.b2 == goal)
 
   /**
    * This function takes two arguments: the current block `b` and
@@ -28,15 +28,17 @@ trait Solver extends GameDef {
    * It should only return valid neighbors, i.e. block positions
    * that are inside the terrain.
    */
-  def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = ???
+  def neighborsWithHistory(b: Block, history: List[Move]): Stream[(Block, List[Move])] = 
+    b.legalNeighbors.map(blockMove => (blockMove._1, blockMove._2 +: history)).toStream
+    
 
   /**
    * This function returns the list of neighbors without the block
    * positions that have already been explored. We will use it to
    * make sure that we don't explore circular paths.
    */
-  def newNeighborsOnly(neighbors: Stream[(Block, List[Move])],
-                       explored: Set[Block]): Stream[(Block, List[Move])] = ???
+  def newNeighborsOnly(neighbors: Stream[(Block, List[Move])], explored: Set[Block]) : Stream[(Block, List[Move])] =
+    neighbors filter (x => !explored.contains(x._1))
 
   /**
    * The function `from` returns the stream of all possible paths
